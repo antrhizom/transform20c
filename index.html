@@ -1,1 +1,912 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lernen im 21. Jahrhundert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
 
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link.active {
+            border-left-color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .section {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            padding-bottom: 2rem;
+            border-left: 2px solid #e5e7eb;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            border: 2px solid white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .timeline-item.active::before {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+            }
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .comparison-table {
+            overflow-x: auto;
+        }
+
+        .flip-card {
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+            border-bottom: 1px dotted #667eea;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            background: #1f2937;
+            color: white;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            z-index: 100;
+            margin-bottom: 0.5rem;
+        }
+
+        .interactive-diagram {
+            position: relative;
+        }
+
+        .diagram-node {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .diagram-node:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 2rem;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .effect-size {
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16 mb-8">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4">Lernen im 21. Jahrhundert</h1>
+                <p class="text-xl md:text-2xl opacity-90">Ein evidenzbasierter, interaktiver Leitfaden</p>
+                <div class="mt-8 flex justify-center gap-4 flex-wrap">
+                    <span class="badge bg-white bg-opacity-20">Evaluatives Denken</span>
+                    <span class="badge bg-white bg-opacity-20">Kollektive Wirksamkeit</span>
+                    <span class="badge bg-white bg-opacity-20">Mastery Learning</span>
+                    <span class="badge bg-white bg-opacity-20">De-Implementierung</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 pb-16">
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Sidebar Navigation -->
+            <aside class="lg:w-64 sidebar">
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h3 class="font-bold text-lg mb-4 text-gray-800">Navigation</h3>
+                    <div class="space-y-2">
+                        <a href="#intro" class="nav-link block py-3 px-4 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+                            Einleitung
+                        </a>
+                        <a href="#fundament" class="nav-link block py-3 px-4 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+                            Das Fundament
+                        </a>
+                        <a href="#operative" class="nav-link block py-3 px-4 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+                            Operative Ebene
+                        </a>
+                        <a href="#transformation" class="nav-link block py-3 px-4 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+                            Transformation
+                        </a>
+                        <a href="#conclusion" class="nav-link block py-3 px-4 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">
+                            Schlussfolgerung
+                        </a>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h4 class="font-semibold text-sm text-gray-700 mb-3">Fortschritt</h4>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+                            <div id="progress-bar" class="progress-bar bg-gradient-to-r from-purple-500 to-indigo-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500"><span id="progress-text">0</span>% gelesen</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 max-w-4xl">
+                
+                <!-- Einleitung -->
+                <section id="intro" class="section mb-12">
+                    <div class="card bg-white rounded-2xl shadow-lg p-8">
+                        <h2 class="text-3xl font-bold mb-6 text-gray-800">Einleitung: Ein neues Paradigma</h2>
+                        <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                            Die aktuellen Herausforderungen im Bildungswesen erfordern einen Paradigmenwechsel: 
+                            <strong>weg von der reinen Fokussierung auf das Handeln</strong> ("Was tun wir?") 
+                            <strong>hin zur konsequenten Orientierung an der Wirkung</strong> ("Was bewirken wir?") 
+                            und zum strategischen, evidenzbasierten Weglassen.
+                        </p>
+
+                        <!-- Interactive Diagram -->
+                        <div class="my-8 p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl">
+                            <h3 class="font-semibold text-lg mb-6 text-center text-gray-800">Die drei Ebenen der Transformation</h3>
+                            <div class="interactive-diagram grid md:grid-cols-3 gap-4">
+                                <div class="diagram-node bg-white rounded-xl p-6 shadow-md text-center border-2 border-transparent hover:border-purple-400" data-info="fundament">
+                                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-400 to-indigo-400 rounded-full flex items-center justify-center text-white text-2xl font-bold">1</div>
+                                    <h4 class="font-bold text-gray-800 mb-2">Fundament</h4>
+                                    <p class="text-sm text-gray-600">Haltung & Denken</p>
+                                </div>
+                                <div class="diagram-node bg-white rounded-xl p-6 shadow-md text-center border-2 border-transparent hover:border-purple-400" data-info="operative">
+                                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">2</div>
+                                    <h4 class="font-bold text-gray-800 mb-2">Operative Ebene</h4>
+                                    <p class="text-sm text-gray-600">Kernprozesse</p>
+                                </div>
+                                <div class="diagram-node bg-white rounded-xl p-6 shadow-md text-center border-2 border-transparent hover:border-purple-400" data-info="transformation">
+                                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">3</div>
+                                    <h4 class="font-bold text-gray-800 mb-2">Transformation</h4>
+                                    <p class="text-sm text-gray-600">Digitalisierung & Wandel</p>
+                                </div>
+                            </div>
+                            <div id="diagram-info" class="mt-6 p-4 bg-white rounded-lg hidden">
+                                <p class="text-sm text-gray-700"></p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Teil I: Fundament -->
+                <section id="fundament" class="section mb-12">
+                    <div class="card bg-white rounded-2xl shadow-lg p-8">
+                        <h2 class="text-3xl font-bold mb-6 text-gray-800">Teil I: Das Fundament</h2>
+                        
+                        <!-- Tabs für Evaluatives Denken vs CTE -->
+                        <div class="mb-6">
+                            <div class="flex gap-2 border-b border-gray-200">
+                                <button class="tab-btn px-6 py-3 font-semibold text-gray-600 border-b-2 border-transparent hover:text-purple-600 transition-colors" data-tab="evaluativ">
+                                    Evaluatives Denken
+                                </button>
+                                <button class="tab-btn px-6 py-3 font-semibold text-gray-600 border-b-2 border-transparent hover:text-purple-600 transition-colors" data-tab="cte">
+                                    Kollektive Wirksamkeit (CTE)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content: Evaluatives Denken -->
+                        <div id="tab-evaluativ" class="tab-content">
+                            <div class="prose max-w-none">
+                                <h3 class="text-2xl font-bold mb-4 text-gray-800">Evaluatives Denken</h3>
+                                <p class="text-gray-700 mb-4">
+                                    Die Haltung der Lehrperson als <span class="tooltip font-semibold text-purple-600" data-tooltip="Systematische Untersuchung der eigenen Wirkung">Forscher des eigenen Unterrichts</span>. 
+                                    Es geht darum, die eigene Wirkung auf das Lernen der Schüler systematisch zu untersuchen, 
+                                    Hypothesen zu bilden, Evidenz zu sammeln und das Handeln datenbasiert anzupassen.
+                                </p>
+
+                                <h4 class="text-xl font-semibold mt-6 mb-4 text-gray-800">Die 5 Kernkompetenzen</h4>
+                                
+                                <!-- Flip Cards für Kompetenzen -->
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="flip-card h-48 relative">
+                                        <div class="flip-card-inner relative w-full h-full">
+                                            <div class="flip-card-front absolute bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl border-2 border-purple-200">
+                                                <div class="text-center">
+                                                    <div class="text-4xl mb-2">🔍</div>
+                                                    <h5 class="font-bold text-gray-800">Evidenz bewerten</h5>
+                                                </div>
+                                            </div>
+                                            <div class="flip-card-back absolute bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl text-white text-sm">
+                                                Logisches Schlussfolgern anwenden, um Beweise für das Lernen zu bewerten und Handlungsempfehlungen zu entwickeln.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flip-card h-48 relative">
+                                        <div class="flip-card-inner relative w-full h-full">
+                                            <div class="flip-card-front absolute bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl border-2 border-purple-200">
+                                                <div class="text-center">
+                                                    <div class="text-4xl mb-2">🎯</div>
+                                                    <h5 class="font-bold text-gray-800">Implementierung</h5>
+                                                </div>
+                                            </div>
+                                            <div class="flip-card-back absolute bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl text-white text-sm">
+                                                Treue zur Methode überprüfen, unbeabsichtigte Konsequenzen erkennen und flexibel anpassen.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flip-card h-48 relative">
+                                        <div class="flip-card-inner relative w-full h-full">
+                                            <div class="flip-card-front absolute bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl border-2 border-purple-200">
+                                                <div class="text-center">
+                                                    <div class="text-4xl mb-2">💡</div>
+                                                    <h5 class="font-bold text-gray-800">Wirkungsfokus</h5>
+                                                </div>
+                                            </div>
+                                            <div class="flip-card-back absolute bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl text-white text-sm">
+                                                Maximierung des positiven Einflusses auf das Lernleben der Schüler steht im Zentrum.
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flip-card h-48 relative">
+                                        <div class="flip-card-inner relative w-full h-full">
+                                            <div class="flip-card-front absolute bg-gradient-to-br from-purple-100 to-indigo-100 rounded-xl border-2 border-purple-200">
+                                                <div class="text-center">
+                                                    <div class="text-4xl mb-2">⚖️</div>
+                                                    <h5 class="font-bold text-gray-800">Bias-Analyse</h5>
+                                                </div>
+                                            </div>
+                                            <div class="flip-card-back absolute bg-gradient-to-br from-purple-500 to-indigo-500 rounded-xl text-white text-sm">
+                                                Eigene Vorurteile und Störfaktoren aktiv untersuchen und in Schach halten.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-sm text-gray-500 mt-4 text-center italic">💡 Klicken Sie auf die Karten für Details</p>
+                            </div>
+                        </div>
+
+                        <!-- Tab Content: CTE -->
+                        <div id="tab-cte" class="tab-content">
+                            <div class="prose max-w-none">
+                                <h3 class="text-2xl font-bold mb-4 text-gray-800">Kollektive Wirksamkeitserwartung (CTE)</h3>
+                                
+                                <div class="bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-400 p-6 rounded-lg mb-6">
+                                    <div class="flex items-start gap-4">
+                                        <div class="text-4xl">🏆</div>
+                                        <div>
+                                            <h4 class="font-bold text-xl mb-2 text-gray-800">Der stärkste Faktor!</h4>
+                                            <p class="text-gray-700 mb-2">
+                                                Mit einer Effektstärke von <span class="effect-size text-2xl text-amber-600">d=1.57</span> 
+                                                ist CTE der stärkste bekannte Einzelfaktor für Lernerfolg.
+                                            </p>
+                                            <p class="text-sm text-gray-600">Mehr als doppelt so stark wie Feedback (d≈0.7)</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-gray-700 mb-4">
+                                    Der gemeinsame Glaube des Kollegiums, bei <strong>allen</strong> Lernenden einen Unterschied machen zu können 
+                                    – unabhängig von deren Voraussetzungen.
+                                </p>
+
+                                <h4 class="text-xl font-semibold mt-6 mb-4 text-gray-800">Entstehungsbedingungen</h4>
+                                
+                                <div class="space-y-4">
+                                    <div class="flex gap-4 items-start p-4 bg-purple-50 rounded-lg">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                        <div>
+                                            <h5 class="font-semibold text-gray-800">Gemeinsame Evidenzanalyse</h5>
+                                            <p class="text-sm text-gray-600">Kollaborative Konversation basierend auf Daten</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-4 items-start p-4 bg-purple-50 rounded-lg">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                        <div>
+                                            <h5 class="font-semibold text-gray-800">Vertrauen & psychologische Sicherheit</h5>
+                                            <p class="text-sm text-gray-600">Transparente Gespräche über Unsicherheiten möglich</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-4 items-start p-4 bg-purple-50 rounded-lg">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                                        <div>
+                                            <h5 class="font-semibold text-gray-800">Pädagogischer Fokus</h5>
+                                            <p class="text-sm text-gray-600">Zeit für Kernfragen des Lehrens und Lernens</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-4 items-start p-4 bg-purple-50 rounded-lg">
+                                        <div class="flex-shrink-0 w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold">4</div>
+                                        <div>
+                                            <h5 class="font-semibold text-gray-800">Fokussierte Führung</h5>
+                                            <p class="text-sm text-gray-600">Strukturen schaffen, weniger ist mehr</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Teil II: Operative Ebene -->
+                <section id="operative" class="section mb-12">
+                    <div class="card bg-white rounded-2xl shadow-lg p-8">
+                        <h2 class="text-3xl font-bold mb-6 text-gray-800">Teil II: Die operative Ebene</h2>
+                        
+                        <h3 class="text-2xl font-bold mb-6 text-gray-800">Das Lernmodell: DI + Mastery + Feedback</h3>
+                        
+                        <!-- Interactive Process Flow -->
+                        <div class="mb-8 p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="bg-white p-6 rounded-lg shadow-md">
+                                    <h4 class="font-bold text-lg mb-3 text-blue-600">Phase 1: Instruktion</h4>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl">👨‍🏫</span>
+                                            <span class="text-sm"><strong>I do it:</strong> Modellieren</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl">👥</span>
+                                            <span class="text-sm"><strong>We do it:</strong> Angeleitetes Üben</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl">✅</span>
+                                            <span class="text-sm">Verständnis überprüfen</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 text-xs text-gray-500">
+                                        Effektstärke DI: <span class="effect-size">d=0.56</span>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white p-6 rounded-lg shadow-md">
+                                    <h4 class="font-bold text-lg mb-3 text-cyan-600">Phase 2: Mastery Learning</h4>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl">📊</span>
+                                            <span class="text-sm">Formatives Assessment</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl">🔄</span>
+                                            <span class="text-sm"><strong>Korrektur</strong> oder <strong>Anreicherung</strong></span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-2xl">🎯</span>
+                                            <span class="text-sm">90%+ Beherrschung</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 text-xs text-gray-500">
+                                        Personalisiert & datenbasiert
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-6 text-center">
+                                <div class="inline-block bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-6 py-3 rounded-full font-semibold">
+                                    ⚡ Angetrieben durch kontinuierliches Feedback
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- De-Implementierung -->
+                        <h3 class="text-2xl font-bold mb-6 mt-12 text-gray-800">De-Implementierung: RAST-Methode</h3>
+                        
+                        <p class="text-gray-700 mb-6">
+                            Um Raum für wirksame Praktiken zu schaffen, müssen ineffektive systematisch abgeschafft werden. 
+                            <strong>Was nichts bringt, kommt weg!</strong>
+                        </p>
+
+                        <!-- Interactive RAST Buttons -->
+                        <div class="grid md:grid-cols-4 gap-4 mb-6">
+                            <button class="rast-button p-6 bg-red-50 border-2 border-red-200 rounded-xl hover:bg-red-100 hover:border-red-400 transition-all" data-rast="reduce">
+                                <div class="text-4xl mb-2">📉</div>
+                                <div class="font-bold text-red-700">Reduzieren</div>
+                            </button>
+                            <button class="rast-button p-6 bg-orange-50 border-2 border-orange-200 rounded-xl hover:bg-orange-100 hover:border-orange-400 transition-all" data-rast="replace">
+                                <div class="text-4xl mb-2">🔄</div>
+                                <div class="font-bold text-orange-700">Austauschen</div>
+                            </button>
+                            <button class="rast-button p-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl hover:bg-yellow-100 hover:border-yellow-400 transition-all" data-rast="stop">
+                                <div class="text-4xl mb-2">🛑</div>
+                                <div class="font-bold text-yellow-700">Stoppen</div>
+                            </button>
+                            <button class="rast-button p-6 bg-green-50 border-2 border-green-200 rounded-xl hover:bg-green-100 hover:border-green-400 transition-all" data-rast="transform">
+                                <div class="text-4xl mb-2">✨</div>
+                                <div class="font-bold text-green-700">Transformieren</div>
+                            </button>
+                        </div>
+
+                        <div id="rast-details" class="p-6 bg-gray-50 rounded-xl hidden">
+                            <h4 class="font-bold text-lg mb-3 text-gray-800"></h4>
+                            <p class="text-gray-700 mb-4"></p>
+                            <div class="text-sm text-gray-600">
+                                <strong>Beispiel:</strong> <span></span>
+                            </div>
+                        </div>
+
+                        <!-- Comparison Table Toggle -->
+                        <div class="mt-8">
+                            <button id="toggle-comparison" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-600 hover:to-indigo-600 transition-all">
+                                📊 Vergleichstabelle anzeigen: Zeitfresser vs. Alternativen
+                            </button>
+                            <div id="comparison-table" class="mt-6 hidden">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead class="bg-gray-100">
+                                            <tr>
+                                                <th class="p-3 text-left font-semibold">Gängige Praxis</th>
+                                                <th class="p-3 text-left font-semibold">Evidenz</th>
+                                                <th class="p-3 text-left font-semibold">Alternative</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="border-b">
+                                                <td class="p-3">Detailkorrektur von Aufsätzen</td>
+                                                <td class="p-3 text-red-600">Keine Verbesserung</td>
+                                                <td class="p-3">Audio-Feedback, Fokus auf 1-2 Aspekte</td>
+                                            </tr>
+                                            <tr class="border-b bg-gray-50">
+                                                <td class="p-3">Sitzenbleiben</td>
+                                                <td class="p-3 text-red-600">d ≈ -0.13 bis -0.34</td>
+                                                <td class="p-3">Mastery Learning, gezielte Förderung</td>
+                                            </tr>
+                                            <tr class="border-b">
+                                                <td class="p-3">Unstrukturierte Hausaufgaben</td>
+                                                <td class="p-3 text-orange-600">d ≈ 0.15-0.29</td>
+                                                <td class="p-3">Retrieval Practice, Flipped Classroom</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Teil III: Transformation -->
+                <section id="transformation" class="section mb-12">
+                    <div class="card bg-white rounded-2xl shadow-lg p-8">
+                        <h2 class="text-3xl font-bold mb-6 text-gray-800">Teil III: Die Transformation</h2>
+                        
+                        <h3 class="text-2xl font-bold mb-6 text-gray-800">Digitalisierung verstehen</h3>
+                        
+                        <!-- SAMR/TPACK vs Soziologische Perspektive -->
+                        <div class="mb-8 p-6 bg-gradient-to-br from-red-50 to-rose-50 rounded-xl border-l-4 border-red-400">
+                            <h4 class="font-bold text-lg mb-4 text-gray-800">❌ Unterkomplexe Modelle</h4>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h5 class="font-semibold mb-2">SAMR-Modell</h5>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>→ Linearer Fortschritt ("Leiter")</li>
+                                        <li>→ Technologiefixiert</li>
+                                        <li>→ Ignoriert Kontext</li>
+                                    </ul>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <h5 class="font-semibold mb-2">TPACK-Modell</h5>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>→ Fokus auf Einzelperson</li>
+                                        <li>→ Keine Systemperspektive</li>
+                                        <li>→ Instrumentelle Sicht</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-8 p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border-l-4 border-green-400">
+                            <h4 class="font-bold text-lg mb-4 text-gray-800">✅ Soziologische Perspektive</h4>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <div class="flex items-start gap-3 mb-3">
+                                        <div class="text-3xl">🧩</div>
+                                        <div>
+                                            <h5 class="font-semibold text-gray-800">Nassehi</h5>
+                                            <p class="text-sm text-gray-600">Digitalisierung = Antwort auf <strong>Komplexität</strong></p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-600 pl-12">
+                                        In der Schule: Bewältigung der Komplexität von Individualisierung durch adaptive Systeme.
+                                    </p>
+                                </div>
+                                <div>
+                                    <div class="flex items-start gap-3 mb-3">
+                                        <div class="text-3xl">🕸️</div>
+                                        <div>
+                                            <h5 class="font-semibold text-gray-800">Latour (ANT)</h5>
+                                            <p class="text-sm text-gray-600">Technologie = aktiver <strong>Aktant</strong></p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-gray-600 pl-12">
+                                        Technologie hat ein "Skript" und gestaltet das Akteur-Netzwerk aktiv mit. 
+                                        Nicht Werkzeug, sondern Mitgestalter!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SKRIPT Timeline -->
+                        <h3 class="text-2xl font-bold mb-6 mt-12 text-gray-800">Das SKRIPT-Transformationskonzept</h3>
+                        
+                        <div class="mb-6 p-6 bg-purple-50 rounded-xl">
+                            <h4 class="font-bold text-lg mb-4 text-gray-800">SKRIPT steht für:</h4>
+                            <div class="grid md:grid-cols-2 gap-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">S</span>
+                                    <span class="text-sm"><strong>Systematisch</strong> - geplant & evidenzbasiert</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">K</span>
+                                    <span class="text-sm"><strong>Kollaborativ</strong> - getragen von PLGs</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">R</span>
+                                    <span class="text-sm"><strong>Reflexiv</strong> - evaluatives Denken</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">I</span>
+                                    <span class="text-sm"><strong>Iterativ</strong> - in Zyklen lernen</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">P</span>
+                                    <span class="text-sm"><strong>Praxis</strong></span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">T</span>
+                                    <span class="text-sm"><strong>Transformation</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 class="font-semibold text-lg mb-4 text-gray-800">Die 4 Phasen des Prozesses</h4>
+                        <div class="space-y-0">
+                            <div class="timeline-item active">
+                                <h5 class="font-bold text-purple-600 mb-2">Phase 1: Fundament legen</h5>
+                                <p class="text-sm text-gray-600">Kultur & Haltung etablieren. Strukturen für Kollaboration schaffen. Evaluatives Denken schulen.</p>
+                            </div>
+                            <div class="timeline-item">
+                                <h5 class="font-bold text-purple-600 mb-2">Phase 2: De-Implementierung</h5>
+                                <p class="text-sm text-gray-600">Raum schaffen durch evidenzbasiertes Weglassen. Zeitfresser identifizieren und eliminieren.</p>
+                            </div>
+                            <div class="timeline-item">
+                                <h5 class="font-bold text-purple-600 mb-2">Phase 3: Kernprozesse implementieren</h5>
+                                <p class="text-sm text-gray-600">DI + Mastery Learning pilotieren. Akteur-Netzwerke mit digitalen Systemen entwerfen.</p>
+                            </div>
+                            <div class="timeline-item">
+                                <h5 class="font-bold text-purple-600 mb-2">Phase 4: Skalieren & Verankern</h5>
+                                <p class="text-sm text-gray-600">Erfolgreiche Praktiken ausweiten. Neue "Grammar of Schooling" etablieren.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Schlussfolgerung -->
+                <section id="conclusion" class="section mb-12">
+                    <div class="card bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-2xl shadow-lg p-8">
+                        <h2 class="text-3xl font-bold mb-6">Schlussfolgerung</h2>
+                        <div class="prose prose-invert max-w-none">
+                            <p class="text-lg leading-relaxed mb-6">
+                                Das Modell beschreibt einen <strong>dynamischen Kreislauf</strong>: Eine Haltung des evaluativen Denkens 
+                                und der kollektiven Wirksamkeit (Fundament) ermöglicht die Etablierung wirksamer Kernprozesse 
+                                (Operative Ebene), die durch ein tiefes Verständnis von Digitalisierung als Komplexitätsmanager 
+                                (Transformation) gestaltet werden.
+                            </p>
+                            
+                            <div class="bg-white bg-opacity-20 p-6 rounded-xl backdrop-blur-sm">
+                                <p class="text-2xl font-bold text-center">
+                                    🎯 Ziel: Die Schule wird selbst zur lernenden Organisation.
+                                </p>
+                            </div>
+
+                            <p class="text-lg leading-relaxed mt-6">
+                                Der Wandel wird durch einen iterativen SKRIPT-Prozess gesteuert, der die Schule zu einer 
+                                resilienten und wirksamen Organisation macht – eine Organisation, die in der Lage ist, 
+                                ihre eigene Wirksamkeit kontinuierlich zu reflektieren, sich anzupassen und ihre Praktiken 
+                                auf der Grundlage von <strong>Evidenz statt Ideologie</strong> weiterzuentwickeln.
+                            </p>
+                        </div>
+
+                        <div class="mt-8 flex justify-center">
+                            <button id="reset-button" class="bg-white text-purple-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition-colors">
+                                🔄 Von vorne beginnen
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Navigation & Progress Tracking
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        function updateProgress() {
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight - windowHeight;
+            const scrollTop = window.scrollY;
+            const scrollPercent = (scrollTop / documentHeight) * 100;
+            
+            progressBar.style.width = scrollPercent + '%';
+            progressText.textContent = Math.round(scrollPercent);
+        }
+
+        function updateActiveNav() {
+            const fromTop = window.scrollY + 100;
+
+            navLinks.forEach(link => {
+                const section = document.querySelector(link.getAttribute('href'));
+                if (section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', () => {
+            updateProgress();
+            updateActiveNav();
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                window.scrollTo({
+                    top: target.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Interactive Diagram
+        const diagramNodes = document.querySelectorAll('.diagram-node');
+        const diagramInfo = document.getElementById('diagram-info');
+        const infoContent = {
+            fundament: 'Das Fundament besteht aus evaluativem Denken der Einzelperson und kollektiver Wirksamkeitserwartung des Teams.',
+            operative: 'Die operative Ebene umfasst hochwirksame Lernprozesse: Direkte Instruktion, Mastery Learning, Feedback und De-Implementierung.',
+            transformation: 'Die Transformation nutzt ein soziologisches Verständnis von Digitalisierung und den SKRIPT-Prozess für systemischen Wandel.'
+        };
+
+        diagramNodes.forEach(node => {
+            node.addEventListener('click', () => {
+                const info = node.dataset.info;
+                diagramInfo.querySelector('p').textContent = infoContent[info];
+                diagramInfo.classList.remove('hidden');
+            });
+        });
+
+        // Tabs
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+                
+                tabBtns.forEach(b => {
+                    b.classList.remove('border-purple-500', 'text-purple-600');
+                    b.classList.add('border-transparent', 'text-gray-600');
+                });
+                btn.classList.add('border-purple-500', 'text-purple-600');
+                btn.classList.remove('border-transparent');
+                
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById('tab-' + tabId).classList.add('active');
+            });
+        });
+
+        // Initialize first tab
+        tabBtns[0].click();
+
+        // Flip Cards
+        const flipCards = document.querySelectorAll('.flip-card');
+        flipCards.forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('flipped');
+            });
+        });
+
+        // RAST Buttons
+        const rastButtons = document.querySelectorAll('.rast-button');
+        const rastDetails = document.getElementById('rast-details');
+        const rastInfo = {
+            reduce: {
+                title: 'Reduzieren',
+                desc: 'Der Umfang einer Praxis wird verringert.',
+                example: 'Anzahl der Klassenarbeiten pro Halbjahr reduzieren und durch formative Assessments ersetzen.'
+            },
+            replace: {
+                title: 'Austauschen',
+                desc: 'Eine ineffektive Praxis wird durch eine wirksamere ersetzt.',
+                example: 'Detailkorrektur durch schnelles, fokussiertes Audio-Feedback austauschen.'
+            },
+            stop: {
+                title: 'Stoppen',
+                desc: 'Eine schädliche oder wirkungslose Praxis wird komplett eingestellt.',
+                example: 'Sitzenbleiben vollständig beenden und durch gezielte Fördermaßnahmen ersetzen.'
+            },
+            transform: {
+                title: 'Transformieren',
+                desc: 'Zweck und Durchführung werden grundlegend verändert.',
+                example: 'Hausaufgaben in kurze, tägliche Retrieval-Practice-Übungen umwandeln.'
+            }
+        };
+
+        rastButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const rast = btn.dataset.rast;
+                const info = rastInfo[rast];
+                
+                rastButtons.forEach(b => b.classList.remove('ring-2', 'ring-purple-500'));
+                btn.classList.add('ring-2', 'ring-purple-500');
+                
+                rastDetails.querySelector('h4').textContent = info.title;
+                rastDetails.querySelector('p').textContent = info.desc;
+                rastDetails.querySelector('span').textContent = info.example;
+                rastDetails.classList.remove('hidden');
+            });
+        });
+
+        // Comparison Table Toggle
+        const toggleComparison = document.getElementById('toggle-comparison');
+        const comparisonTable = document.getElementById('comparison-table');
+        
+        toggleComparison.addEventListener('click', () => {
+            comparisonTable.classList.toggle('hidden');
+            toggleComparison.textContent = comparisonTable.classList.contains('hidden') 
+                ? '📊 Vergleichstabelle anzeigen: Zeitfresser vs. Alternativen'
+                : '📊 Vergleichstabelle ausblenden';
+        });
+
+        // Reset Button
+        document.getElementById('reset-button').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Initialize
+        updateProgress();
+        updateActiveNav();
+    </script>
+</body>
+</html>
